@@ -39,3 +39,13 @@ export async function deleteChecklistItem(cardId, checklistId, itemId) {
   const res = await api.delete(`/cards/${cardId}/checklists/${checklistId}/items/${itemId}`);
   return res.data.data;
 }
+
+export async function addComment(cardId, data) {
+  const res = await api.post(`/cards/${cardId}/comments`, data);
+  return res.data.data;
+}
+
+export async function deleteComment(cardId, commentId) {
+  const res = await api.delete(`/cards/${cardId}/comments/${commentId}`);
+  return res.data.data;
+}

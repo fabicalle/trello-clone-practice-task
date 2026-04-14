@@ -2,7 +2,412 @@
 @tailwind components;
 @tailwind utilities;
 
+/* ─── Design Tokens ────────────────────────────────────────────────────────── */
+:root {
+  /* Backgrounds — layered dark surfaces */
+  --bg-0:   #07070d;
+  --bg-1:   #0c0c18;
+  --bg-2:   #10101e;
+  --bg-3:   #141428;
+  --bg-4:   #191930;
+  --bg-5:   #1e1e38;
+  --bg-input: #0a0a16;
+
+  /* Borders */
+  --border-0: rgba(255, 255, 255, 0.04);
+  --border-1: rgba(255, 255, 255, 0.07);
+  --border-2: rgba(255, 255, 255, 0.11);
+  --border-3: rgba(255, 255, 255, 0.16);
+  --border-indigo: rgba(99, 102, 241, 0.40);
+  --border-cyan:   rgba(6, 182, 212, 0.35);
+
+  /* Accent palette */
+  --indigo:       #6366f1;
+  --indigo-light: #818cf8;
+  --indigo-dim:   rgba(99, 102, 241, 0.15);
+  --cyan:         #06b6d4;
+  --cyan-light:   #22d3ee;
+  --cyan-dim:     rgba(6, 182, 212, 0.12);
+
+  /* Text */
+  --text-0: #e4e8f8;
+  --text-1: #8b94b8;
+  --text-2: #4a5270;
+
+  /* Status — vivid */
+  --status-green:  #22c55e;
+  --status-yellow: #eab308;
+  --status-orange: #f97316;
+  --status-red:    #f87171;
+  --status-purple: #c084fc;
+  --status-cyan:   #22d3ee;
+  --status-pink:   #f472b6;
+}
+
+/* ─── Base ──────────────────────────────────────────────────────────────────── */
+*, *::before, *::after { box-sizing: border-box; }
+
 body {
   margin: 0;
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-family: 'Barlow', -apple-system, BlinkMacSystemFont, sans-serif;
+  background-color: var(--bg-0);
+  color: var(--text-0);
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* ─── Typography ────────────────────────────────────────────────────────────── */
+.font-display { font-family: 'Chakra Petch', monospace; }
+
+.gradient-text {
+  background: linear-gradient(120deg, var(--indigo-light) 0%, var(--cyan-light) 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+}
+
+/* ─── Glassmorphism ─────────────────────────────────────────────────────────── */
+.glass-header {
+  background: rgba(7, 7, 13, 0.80);
+  backdrop-filter: blur(18px);
+  -webkit-backdrop-filter: blur(18px);
+  border-bottom: 1px solid var(--border-1);
+}
+
+.glass-modal {
+  background: rgba(12, 12, 24, 0.92);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid var(--border-2);
+}
+
+.glass-card {
+  background: rgba(16, 16, 30, 0.85);
+  backdrop-filter: blur(12px);
+  -webkit-backdrop-filter: blur(12px);
+  border: 1px solid var(--border-1);
+}
+
+/* ─── Buttons ───────────────────────────────────────────────────────────────── */
+.btn-primary {
+  background: linear-gradient(135deg, var(--indigo) 0%, #0891b2 100%);
+  color: #fff;
+  font-weight: 600;
+  letter-spacing: 0.03em;
+  border: none;
+  cursor: pointer;
+  transition: background 0.22s ease, box-shadow 0.22s ease, opacity 0.2s ease;
+}
+.btn-primary:hover:not(:disabled) {
+  background: linear-gradient(135deg, var(--indigo-light) 0%, var(--cyan-light) 100%);
+  box-shadow: 0 0 22px rgba(99, 102, 241, 0.50), 0 0 50px rgba(6, 182, 212, 0.18);
+}
+.btn-primary:disabled {
+  opacity: 0.45;
+  cursor: not-allowed;
+}
+
+.btn-ghost {
+  background: transparent;
+  color: var(--text-1);
+  cursor: pointer;
+  transition: color 0.15s ease, background 0.15s ease;
+}
+.btn-ghost:hover {
+  color: var(--text-0);
+  background: rgba(255, 255, 255, 0.05);
+}
+
+/* Small secondary action button */
+.btn-action {
+  background: var(--bg-4);
+  color: var(--text-1);
+  border: 1px solid var(--border-2);
+  cursor: pointer;
+  font-weight: 500;
+  transition: all 0.18s ease;
+}
+.btn-action:hover {
+  background: var(--bg-5);
+  color: var(--text-0);
+  border-color: var(--border-3);
+}
+
+/* ─── Inputs ────────────────────────────────────────────────────────────────── */
+.input-dark {
+  background: var(--bg-input);
+  border: 1px solid var(--border-2);
+  color: var(--text-0);
+  outline: none;
+  transition: border-color 0.18s ease, box-shadow 0.18s ease;
+}
+.input-dark::placeholder { color: var(--text-2); }
+.input-dark:focus {
+  border-color: var(--cyan);
+  box-shadow: 0 0 0 2px rgba(6, 182, 212, 0.18);
+}
+
+/* Date input calendar icon */
+input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: invert(0.55) sepia(1) saturate(2) hue-rotate(175deg);
+  cursor: pointer;
+  opacity: 0.7;
+}
+input[type="date"]::-webkit-calendar-picker-indicator:hover { opacity: 1; }
+
+/* ─── Checkboxes ────────────────────────────────────────────────────────────── */
+input[type="checkbox"].dark-check {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 15px;
+  height: 15px;
+  border: 1px solid var(--border-3);
+  border-radius: 3px;
+  background: transparent;
+  cursor: pointer;
+  position: relative;
+  flex-shrink: 0;
+  transition: all 0.15s ease;
+}
+input[type="checkbox"].dark-check:checked {
+  background: linear-gradient(135deg, var(--indigo), var(--cyan));
+  border-color: transparent;
+}
+input[type="checkbox"].dark-check:checked::after {
+  content: '';
+  position: absolute;
+  left: 4px;
+  top: 1px;
+  width: 5px;
+  height: 8px;
+  border: 2px solid #fff;
+  border-top: none;
+  border-left: none;
+  transform: rotate(45deg);
+}
+
+/* ─── Neon hover effects ─────────────────────────────────────────────────────── */
+.neon-card {
+  transition: box-shadow 0.2s ease, border-color 0.2s ease, transform 0.18s ease;
+}
+.neon-card:hover {
+  box-shadow: 0 0 0 1px rgba(99, 102, 241, 0.45), 0 0 18px rgba(99, 102, 241, 0.22), 0 6px 24px rgba(0,0,0,0.55);
+  border-color: rgba(99, 102, 241, 0.45) !important;
+  transform: translateY(-2px);
+}
+
+.neon-board-tile {
+  transition: all 0.2s ease;
+}
+.neon-board-tile:hover {
+  transform: translateY(-3px) scale(1.02);
+  filter: brightness(1.12) saturate(1.1);
+  box-shadow: 0 10px 40px rgba(0,0,0,0.6), 0 0 30px rgba(255,255,255,0.04);
+}
+
+.neon-btn-sm {
+  transition: all 0.18s ease;
+}
+.neon-btn-sm:hover {
+  box-shadow: 0 0 12px rgba(99, 102, 241, 0.4);
+}
+
+/* ─── Background glow layers ────────────────────────────────────────────────── */
+.page-glow {
+  position: relative;
+  overflow: hidden;
+  min-height: 100vh;
+  background: var(--bg-0);
+}
+.page-glow::before {
+  content: '';
+  position: absolute;
+  top: -25%;
+  left: -15%;
+  width: 55%;
+  height: 65%;
+  background: radial-gradient(ellipse, rgba(99, 102, 241, 0.14) 0%, transparent 68%);
+  pointer-events: none;
+  z-index: 0;
+}
+.page-glow::after {
+  content: '';
+  position: absolute;
+  bottom: -25%;
+  right: -15%;
+  width: 55%;
+  height: 65%;
+  background: radial-gradient(ellipse, rgba(6, 182, 212, 0.10) 0%, transparent 68%);
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ─── Scrollbar ─────────────────────────────────────────────────────────────── */
+::-webkit-scrollbar { width: 5px; height: 5px; }
+::-webkit-scrollbar-track { background: transparent; }
+::-webkit-scrollbar-thumb { background: rgba(255,255,255,0.09); border-radius: 3px; }
+::-webkit-scrollbar-thumb:hover { background: rgba(255,255,255,0.18); }
+
+/* ─── Label color swatches ───────────────────────────────────────────────────── */
+.color-swatch {
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+}
+.color-swatch:hover { transform: scale(1.12); }
+.color-swatch.selected {
+  ring: 2px solid rgba(255,255,255,0.7);
+  transform: scale(1.15);
+  box-shadow: 0 0 0 2px rgba(255,255,255,0.65), 0 0 10px rgba(255,255,255,0.2);
+}
+
+/* ─── Progress bar ───────────────────────────────────────────────────────────── */
+.progress-track {
+  background: var(--bg-5);
+  border-radius: 9999px;
+  overflow: hidden;
+}
+.progress-fill-indigo { background: linear-gradient(90deg, var(--indigo), var(--cyan)); }
+.progress-fill-green  { background: linear-gradient(90deg, #16a34a, var(--status-green)); }
+
+/* ─── Section headers inside modal ──────────────────────────────────────────── */
+.section-label {
+  font-size: 0.65rem;
+  font-weight: 600;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--text-2);
+  font-family: 'Chakra Petch', monospace;
+}
+
+/* ─── Drag states ────────────────────────────────────────────────────────────── */
+/* Note: no transform override here — dnd controls translate via inline style */
+.is-dragging-card {
+  box-shadow: 0 0 0 1px rgba(99,102,241,0.6), 0 0 28px rgba(99,102,241,0.35), 0 16px 48px rgba(0,0,0,0.7) !important;
+  border-color: rgba(99,102,241,0.5) !important;
+  opacity: 0.96;
+}
+.is-dragging-list {
+  box-shadow: 0 0 0 1px rgba(6,182,212,0.5), 0 0 36px rgba(6,182,212,0.2), 0 20px 60px rgba(0,0,0,0.7) !important;
+  opacity: 0.95;
+}
+.drop-target-active {
+  background: rgba(99, 102, 241, 0.08) !important;
+  border-color: rgba(99, 102, 241, 0.3) !important;
+}
+
+/* ─── Hover utilities (theme-aware) ─────────────────────────────────────────── */
+/* Use these classes in place of inline rgba(255,255,255,...) hover handlers */
+.hover-surface { transition: background 0.15s ease; }
+.hover-surface:hover { background: rgba(255, 255, 255, 0.05) !important; }
+[data-theme="light"] .hover-surface:hover { background: rgba(50, 55, 100, 0.07) !important; }
+
+.hover-row { transition: background 0.15s ease; }
+.hover-row:hover { background: rgba(255, 255, 255, 0.03) !important; }
+[data-theme="light"] .hover-row:hover { background: rgba(50, 55, 100, 0.05) !important; }
+
+/* Header interactive elements */
+.header-user-btn { border: 1px solid transparent; transition: all 0.15s ease; }
+.header-user-btn:hover { background: rgba(255,255,255,0.05); border-color: rgba(255,255,255,0.07); }
+[data-theme="light"] .header-user-btn:hover { background: rgba(50,55,100,0.07); border-color: rgba(50,55,100,0.12); }
+
+/* Header user dropdown */
+.header-dropdown {
+  background: rgba(12, 12, 22, 0.97);
+  border: 1px solid rgba(255,255,255,0.09);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  box-shadow: 0 20px 60px rgba(0,0,0,0.7), 0 0 0 1px rgba(99,102,241,0.1);
+}
+[data-theme="light"] .header-dropdown {
+  background: rgba(248, 249, 254, 0.98);
+  border-color: rgba(50,55,100,0.14);
+  box-shadow: 0 12px 40px rgba(0,0,0,0.12), 0 0 0 1px rgba(99,102,241,0.10);
+}
+
+/* Theme toggle button */
+.theme-toggle {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px;
+  height: 30px;
+  border-radius: 8px;
+  border: 1px solid var(--border-2);
+  background: var(--bg-3);
+  color: var(--text-1);
+  cursor: pointer;
+  transition: all 0.2s ease;
+  flex-shrink: 0;
+}
+.theme-toggle:hover {
+  background: var(--bg-4);
+  color: var(--text-0);
+  border-color: var(--border-3);
+  box-shadow: 0 0 10px rgba(99,102,241,0.2);
+}
+
+/* ─── Light mode tokens ─────────────────────────────────────────────────────── */
+[data-theme="light"] {
+  --bg-0:     #f4f5fb;
+  --bg-1:     #eceef8;
+  --bg-2:     #e3e6f3;
+  --bg-3:     #d9dcee;
+  --bg-4:     #cfd3e9;
+  --bg-5:     #c5c9e4;
+  --bg-input: #f8f9fe;
+
+  --border-0: rgba(50, 55, 100, 0.05);
+  --border-1: rgba(50, 55, 100, 0.09);
+  --border-2: rgba(50, 55, 100, 0.15);
+  --border-3: rgba(50, 55, 100, 0.22);
+  --border-indigo: rgba(99, 102, 241, 0.30);
+  --border-cyan:   rgba(6, 182, 212, 0.25);
+
+  --text-0: #0d0f1e;
+  --text-1: #3b4065;
+  --text-2: #6e75a0;
+}
+
+/* ─── Light mode component overrides ────────────────────────────────────────── */
+[data-theme="light"] .glass-header {
+  background: rgba(244, 245, 251, 0.88);
+  border-bottom-color: rgba(50, 55, 100, 0.10);
+}
+[data-theme="light"] .glass-modal {
+  background: rgba(236, 238, 248, 0.98);
+  border-color: rgba(50, 55, 100, 0.14);
+}
+[data-theme="light"] .glass-card {
+  background: rgba(240, 242, 252, 0.92);
+  border-color: rgba(50, 55, 100, 0.09);
+}
+[data-theme="light"] .btn-ghost:hover {
+  background: rgba(50, 55, 100, 0.07);
+  color: var(--text-0);
+}
+[data-theme="light"] .btn-action {
+  background: var(--bg-3);
+  border-color: var(--border-2);
+}
+[data-theme="light"] .btn-action:hover {
+  background: var(--bg-4);
+}
+[data-theme="light"] .neon-card:hover {
+  box-shadow: 0 0 0 1px rgba(99,102,241,0.35), 0 4px 20px rgba(99,102,241,0.12), 0 4px 14px rgba(0,0,0,0.06);
+}
+[data-theme="light"] .page-glow::before {
+  background: radial-gradient(ellipse, rgba(99,102,241,0.07) 0%, transparent 68%);
+}
+[data-theme="light"] .page-glow::after {
+  background: radial-gradient(ellipse, rgba(6,182,212,0.05) 0%, transparent 68%);
+}
+[data-theme="light"] .progress-track { background: var(--bg-4); }
+[data-theme="light"] .drop-target-active {
+  background: rgba(99,102,241,0.06) !important;
+  border-color: rgba(99,102,241,0.22) !important;
+}
+[data-theme="light"] ::-webkit-scrollbar-thumb { background: rgba(50,55,100,0.14); }
+[data-theme="light"] ::-webkit-scrollbar-thumb:hover { background: rgba(50,55,100,0.24); }
+[data-theme="light"] input[type="date"]::-webkit-calendar-picker-indicator {
+  filter: none;
+  opacity: 0.45;
 }
