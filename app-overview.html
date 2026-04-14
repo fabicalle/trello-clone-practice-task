@@ -1,0 +1,416 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Trello Clone App Overview</title>
+  <style>
+    :root {
+      --bg-0: #06121a;
+      --bg-1: #0b1d28;
+      --panel: rgba(7, 25, 36, 0.72);
+      --panel-border: rgba(148, 212, 255, 0.24);
+      --text: #e8f8ff;
+      --muted: #9cc0d3;
+      --accent-a: #00e5a8;
+      --accent-b: #15b9ff;
+      --accent-c: #ffd166;
+      --accent-d: #ff7b7b;
+      --ok: #2dd881;
+      --warn: #f5b700;
+      --danger: #f45b69;
+      --shadow: 0 28px 65px rgba(0, 0, 0, 0.45);
+      --radius: 18px;
+      --radius-sm: 12px;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html, body {
+      margin: 0;
+      min-height: 100%;
+      color: var(--text);
+      font-family: "Space Grotesk", "Segoe UI", Tahoma, sans-serif;
+      background:
+        radial-gradient(circle at 10% 0%, rgba(21, 185, 255, 0.24), transparent 36%),
+        radial-gradient(circle at 90% 8%, rgba(0, 229, 168, 0.20), transparent 34%),
+        linear-gradient(145deg, var(--bg-0), var(--bg-1));
+      background-attachment: fixed;
+    }
+
+    body {
+      padding: 2rem 1rem 4rem;
+    }
+
+    .grid-overlay {
+      position: fixed;
+      inset: 0;
+      pointer-events: none;
+      background-image:
+        linear-gradient(rgba(145, 201, 230, 0.07) 1px, transparent 1px),
+        linear-gradient(90deg, rgba(145, 201, 230, 0.07) 1px, transparent 1px);
+      background-size: 34px 34px;
+      mask-image: radial-gradient(circle at 50% 25%, black 38%, transparent 85%);
+      z-index: 0;
+    }
+
+    main {
+      position: relative;
+      z-index: 1;
+      max-width: 1120px;
+      margin: 0 auto;
+    }
+
+    .hero {
+      display: grid;
+      gap: 1.1rem;
+      margin-bottom: 1.6rem;
+      animation: rise 560ms ease-out both;
+    }
+
+    .pill {
+      width: fit-content;
+      padding: 0.28rem 0.72rem;
+      border: 1px solid rgba(0, 229, 168, 0.45);
+      color: var(--accent-a);
+      border-radius: 999px;
+      font-size: 0.78rem;
+      letter-spacing: 0.09em;
+      text-transform: uppercase;
+      background: rgba(0, 229, 168, 0.07);
+    }
+
+    h1 {
+      margin: 0;
+      line-height: 1.06;
+      font-size: clamp(2.1rem, 4.8vw, 4.1rem);
+      letter-spacing: -0.02em;
+      max-width: 900px;
+    }
+
+    h1 .glow {
+      background: linear-gradient(100deg, var(--accent-a), var(--accent-b));
+      -webkit-background-clip: text;
+      background-clip: text;
+      color: transparent;
+      text-shadow: 0 0 28px rgba(0, 229, 168, 0.18);
+    }
+
+    .subtitle {
+      margin: 0;
+      color: var(--muted);
+      max-width: 900px;
+      font-size: clamp(1rem, 2vw, 1.15rem);
+    }
+
+    .meta {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.6rem;
+      margin-top: 0.2rem;
+    }
+
+    .chip {
+      border: 1px solid rgba(148, 212, 255, 0.35);
+      border-radius: 999px;
+      padding: 0.36rem 0.72rem;
+      font-size: 0.8rem;
+      color: #c3e4f6;
+      background: rgba(7, 30, 43, 0.62);
+    }
+
+    .layout {
+      display: grid;
+      gap: 1rem;
+      grid-template-columns: repeat(12, 1fr);
+    }
+
+    .card {
+      grid-column: span 12;
+      border-radius: var(--radius);
+      border: 1px solid var(--panel-border);
+      background: var(--panel);
+      backdrop-filter: blur(10px);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      opacity: 0;
+      transform: translateY(16px);
+      animation: rise 620ms ease-out forwards;
+    }
+
+    .card:nth-child(1) { animation-delay: 90ms; }
+    .card:nth-child(2) { animation-delay: 170ms; }
+    .card:nth-child(3) { animation-delay: 250ms; }
+
+    .card-head {
+      padding: 1rem 1.15rem;
+      border-bottom: 1px solid rgba(148, 212, 255, 0.24);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 0.8rem;
+      background: linear-gradient(170deg, rgba(12, 49, 64, 0.52), rgba(8, 29, 40, 0.42));
+    }
+
+    .card-head h2 {
+      margin: 0;
+      font-size: clamp(1.15rem, 2.6vw, 1.5rem);
+      letter-spacing: 0.01em;
+    }
+
+    .badge {
+      border-radius: 999px;
+      padding: 0.28rem 0.65rem;
+      font-size: 0.76rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .badge.product {
+      color: #032c1f;
+      background: var(--accent-a);
+    }
+
+    .badge.arch {
+      color: #03263a;
+      background: var(--accent-b);
+    }
+
+    .badge.tests {
+      color: #473400;
+      background: var(--accent-c);
+    }
+
+    .content {
+      padding: 1rem 1.15rem 1.2rem;
+      display: grid;
+      gap: 0.9rem;
+    }
+
+    .content p {
+      margin: 0;
+      color: #d4edf9;
+      line-height: 1.55;
+    }
+
+    .list {
+      margin: 0;
+      padding-left: 1.1rem;
+      display: grid;
+      gap: 0.5rem;
+      color: #dff5ff;
+    }
+
+    .list strong {
+      color: #ffffff;
+    }
+
+    .metrics {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+      gap: 0.7rem;
+      margin-top: 0.3rem;
+    }
+
+    .metric {
+      border: 1px solid rgba(148, 212, 255, 0.26);
+      background: rgba(8, 38, 52, 0.54);
+      border-radius: var(--radius-sm);
+      padding: 0.72rem;
+    }
+
+    .metric .label {
+      color: #93bed2;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+    }
+
+    .metric .value {
+      margin-top: 0.35rem;
+      font-size: 1.3rem;
+      font-weight: 700;
+      letter-spacing: -0.01em;
+    }
+
+    .stack {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 0.55rem;
+      margin-top: 0.2rem;
+    }
+
+    .stack span {
+      border: 1px solid rgba(148, 212, 255, 0.33);
+      background: rgba(7, 32, 46, 0.65);
+      color: #d6f0ff;
+      border-radius: 9px;
+      padding: 0.34rem 0.56rem;
+      font-size: 0.84rem;
+    }
+
+    .status {
+      display: grid;
+      gap: 0.45rem;
+    }
+
+    .status-line {
+      display: flex;
+      align-items: center;
+      gap: 0.55rem;
+      color: #d8eef7;
+      font-size: 0.95rem;
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 999px;
+      box-shadow: 0 0 0 5px rgba(255, 255, 255, 0.02);
+      flex-shrink: 0;
+    }
+
+    .dot.ok { background: var(--ok); box-shadow: 0 0 14px rgba(45, 216, 129, 0.7); }
+    .dot.warn { background: var(--warn); box-shadow: 0 0 14px rgba(245, 183, 0, 0.7); }
+    .dot.danger { background: var(--danger); box-shadow: 0 0 14px rgba(244, 91, 105, 0.7); }
+
+    footer {
+      margin-top: 1rem;
+      color: #99bfd1;
+      font-size: 0.84rem;
+      text-align: right;
+    }
+
+    @media (min-width: 880px) {
+      .card.product { grid-column: span 7; }
+      .card.arch { grid-column: span 5; }
+      .card.tests { grid-column: span 12; }
+      .content {
+        padding: 1.1rem 1.2rem 1.25rem;
+      }
+    }
+
+    @keyframes rise {
+      from {
+        opacity: 0;
+        transform: translateY(18px) scale(0.99);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="grid-overlay" aria-hidden="true"></div>
+  <main>
+    <section class="hero">
+      <div class="pill">Portfolio project summary</div>
+      <h1>Trello Clone <span class="glow">from three angles</span></h1>
+      <p class="subtitle">
+        A full-stack task management app with secure auth, drag-and-drop workflows,
+        and a complete test suite covering backend, frontend, and end-to-end behavior.
+      </p>
+      <div class="meta">
+        <span class="chip">React + Vite client</span>
+        <span class="chip">Express + Prisma API</span>
+        <span class="chip">PostgreSQL database</span>
+        <span class="chip">Jest + Vitest + Playwright</span>
+      </div>
+    </section>
+
+    <section class="layout" aria-label="Three perspectives">
+      <article class="card product">
+        <header class="card-head">
+          <h2>Product</h2>
+          <span class="badge product">Features</span>
+        </header>
+        <div class="content">
+          <p>
+            This app recreates core Trello workflows so users can organize work by boards,
+            columns, and cards with smooth drag-and-drop interactions.
+          </p>
+          <ul class="list">
+            <li><strong>Authentication:</strong> Registration, login, and secure session refresh with JWT flow.</li>
+            <li><strong>Boards & lists:</strong> Create and manage multiple boards with color presets and ordered lists.</li>
+            <li><strong>Cards:</strong> Card title and description editing, due dates, and fast movement across lists.</li>
+            <li><strong>Card details:</strong> Labels, checklists, checklist items, and completion progress tracking.</li>
+            <li><strong>Due-date awareness:</strong> Color-coded due date badges to highlight urgency.</li>
+          </ul>
+          <div class="metrics">
+            <div class="metric">
+              <div class="label">Primary user goal</div>
+              <div class="value">Visual planning</div>
+            </div>
+            <div class="metric">
+              <div class="label">Interaction model</div>
+              <div class="value">Drag & drop</div>
+            </div>
+            <div class="metric">
+              <div class="label">State style</div>
+              <div class="value">Optimistic UI</div>
+            </div>
+          </div>
+        </div>
+      </article>
+
+      <article class="card arch">
+        <header class="card-head">
+          <h2>Architecture and Tech</h2>
+          <span class="badge arch">System</span>
+        </header>
+        <div class="content">
+          <p>
+            The project uses a monorepo with a React SPA frontend, an Express REST API,
+            and a PostgreSQL database accessed through Prisma ORM.
+          </p>
+          <div class="stack">
+            <span>React 18</span>
+            <span>Vite 5</span>
+            <span>Tailwind CSS</span>
+            <span>Axios interceptors</span>
+            <span>Node.js + Express 4</span>
+            <span>Prisma ORM</span>
+            <span>PostgreSQL</span>
+            <span>Zod validation</span>
+            <span>@hello-pangea/dnd</span>
+          </div>
+          <ul class="list">
+            <li><strong>Internal communication:</strong> Client calls REST endpoints and sends bearer access tokens for protected routes.</li>
+            <li><strong>Token strategy:</strong> Access token in React state, refresh token in httpOnly cookie.</li>
+            <li><strong>Response contract:</strong> Success uses <code>{ data: ... }</code>, errors use <code>{ error: "..." }</code>.</li>
+            <li><strong>Data model:</strong> Core entities include User, Board, List, Card, Label, Checklist, ChecklistItem.</li>
+            <li><strong>Ordering:</strong> Float-based positions reduce full-list reindexing when reordering cards/lists.</li>
+          </ul>
+        </div>
+      </article>
+
+      <article class="card tests">
+        <header class="card-head">
+          <h2>Tests</h2>
+          <span class="badge tests">Quality</span>
+        </header>
+        <div class="content">
+          <p>
+            Testing is layered so the app validates logic, component behavior, and realistic user flows
+            from login to board and card operations.
+          </p>
+          <div class="status">
+            <div class="status-line"><span class="dot ok"></span><strong>Server integration tests (Jest + Supertest):</strong> auth, boards, lists, cards, and middleware coverage.</div>
+            <div class="status-line"><span class="dot ok"></span><strong>Client component tests (Vitest + RTL):</strong> AuthContext, board views, card modal, and due-date badges.</div>
+            <div class="status-line"><span class="dot ok"></span><strong>E2E tests (Playwright):</strong> auth journeys, board flows, list/card interactions, and card detail behavior.</div>
+            <div class="status-line"><span class="dot warn"></span><strong>Execution notes:</strong> dev and test databases must stay separate before running server or E2E tests.</div>
+            <div class="status-line"><span class="dot danger"></span><strong>Risk to monitor:</strong> token refresh edge cases and drag-drop rollback scenarios under network failures.</div>
+          </div>
+        </div>
+      </article>
+    </section>
+
+    <footer>Generated overview for the Trello Clone workspace.</footer>
+  </main>
+</body>
+</html>
